@@ -21,7 +21,7 @@ namespace Water
 
 		// Text
 		private SpriteFontBase _font;
-		private bool _displayInfo;
+		private bool _displayInfo = true;
 
 		private float _aspectRatio;
 		private float _nearPlane;
@@ -136,8 +136,6 @@ namespace Water
 			_graphics.IsFullScreen = false;
 			_graphics.ApplyChanges();
 			Window.Title = "Water project";
-
-			_displayInfo = false;
 
 			// Camera init
 			_nearPlane = 1.0f;
@@ -435,7 +433,7 @@ namespace Water
 			_controller.SetControlKeyState(CameraInputController.ControlKeys.Up, keyboardState.IsKeyDown(Keys.Up));
 			_controller.SetControlKeyState(CameraInputController.ControlKeys.Down, keyboardState.IsKeyDown(Keys.Down));
 
-			_controller.SetTouchState(CameraInputController.TouchType.Rotate, mouseState.MiddleButton == ButtonState.Pressed);
+			_controller.SetTouchState(CameraInputController.TouchType.Rotate, mouseState.RightButton == ButtonState.Pressed);
 			_controller.SetMousePosition(new Point(mouseState.X, mouseState.Y));
 
 			_controller.Update();
@@ -528,7 +526,7 @@ namespace Water
 				_spriteBatch.DrawString(_font, "Fresnel: " + _enableFresnel, new Vector2(0, 360), Color.White);
 				_spriteBatch.DrawString(_font, "Waves: " + _enableWaves, new Vector2(0, 390), Color.White);
 				_spriteBatch.DrawString(_font, "Specular: " + _enableSpecularLighting, new Vector2(0, 420), Color.White);
-				_spriteBatch.DrawString(_font, "Skybox: " + _enableWaves, new Vector2(0, 450), Color.White);
+				_spriteBatch.DrawString(_font, "Skybox: " + _drawSkybox, new Vector2(0, 450), Color.White);
 
 				_spriteBatch.End();
 			}
