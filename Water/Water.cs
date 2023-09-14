@@ -175,7 +175,7 @@ namespace Water
 
 			base.Initialize();
 
-			Camera.SetLookAt(new Vector3(100, 100, 100), new Vector3(100, 30, 100));
+			Camera.SetLookAt(new Vector3(100, 100, 100), new Vector3(101, 90, 101));
 
 			_controller = new CameraInputController(Camera);
 		}
