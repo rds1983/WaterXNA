@@ -125,7 +125,8 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
 	output.Position = mul(input.Position, worldViewProj);
 
-	output.ToCameraVector = input.Position - CameraPosition;
+	float4 worldPos = mul(input.Position, World);
+	output.ToCameraVector = worldPos - CameraPosition;
 
 	// Calculate reflection position
 
