@@ -2,7 +2,10 @@
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
+#if FNA
 using Water.Vertices;
+#endif
 
 namespace Water.Utils
 {

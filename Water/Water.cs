@@ -114,7 +114,11 @@ namespace Water
 
 		public static readonly string RootAssetFolder = Path.Combine(FileSystem.ExecutingAssemblyDirectory, "Assets");
 		public static readonly AssetManager AssetManager = AssetManager.CreateFileAssetManager(RootAssetFolder);
+#if FNA
 		public static AssetManager AssetManagerEffects = AssetManager.CreateResourceAssetManager(Assembly, "Shaders.FNA");
+#else
+		public static AssetManager AssetManagerEffects = AssetManager.CreateResourceAssetManager(Assembly, "Shaders.MonoGameDX11");
+#endif
 
 		#endregion
 
@@ -719,7 +723,6 @@ namespace Water
 					// Compute normals
 					_terrainVertices[i].Normal = Vector3.Zero;
 
-					Vector3 normal;
 					float deltaHeight;
 					if (x > 0)
 					{

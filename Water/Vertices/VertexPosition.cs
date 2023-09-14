@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿#if FNA
+
+using System.Runtime.InteropServices;
 using System;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
@@ -103,3 +105,5 @@ namespace Water.Vertices
 		#endregion
 	}
 }
+
+#endif

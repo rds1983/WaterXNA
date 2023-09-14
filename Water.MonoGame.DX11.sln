@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Water.MonoGame.DX11", "Water\Water.MonoGame.DX11.csproj", "{0D31A1B9-2EB8-4468-A084-553BC9F25D3B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoGame.Framework.WindowsDX", "..\MonoGame\MonoGame.Framework\MonoGame.Framework.WindowsDX.csproj", "{29850D70-83B5-470C-987F-FCFDC9988192}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D31A1B9-2EB8-4468-A084-553BC9F25D3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D31A1B9-2EB8-4468-A084-553BC9F25D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D31A1B9-2EB8-4468-A084-553BC9F25D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D31A1B9-2EB8-4468-A084-553BC9F25D3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29850D70-83B5-470C-987F-FCFDC9988192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29850D70-83B5-470C-987F-FCFDC9988192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29850D70-83B5-470C-987F-FCFDC9988192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29850D70-83B5-470C-987F-FCFDC9988192}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9694B75E-A259-417A-AA60-D40AAE5D9A9D}
+	EndGlobalSection
+EndGlobal
