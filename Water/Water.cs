@@ -578,7 +578,7 @@ namespace Water
 			_waterEffect.CurrentTechnique = _waterEffect.Techniques["ClassicTechnique"];
 			_waterEffect.Parameters["Projection"].SetValue(_projectionMatrix);
 			_waterEffect.Parameters["View"].SetValue(_viewMatrix);
-			_waterEffect.Parameters["World"].SetValue(Matrix.Identity);
+			_waterEffect.Parameters["World"].SetValue(Matrix.CreateScale(256, 1, 256));
 
 			_waterEffect.Parameters["RefractionTexture"].SetValue(_refractionTexture);
 
@@ -764,19 +764,19 @@ namespace Water
 
 			// Bottom left
 			_waterVertices[0].Position = new Vector3(0, _waterHeight, 0);
-			_waterVertices[0].TextureCoordinate = new Vector2(0, 1);
+			_waterVertices[0].TextureCoordinate = new Vector2(0, 0);
 
 			// Top left
-			_waterVertices[1].Position = new Vector3(0, _waterHeight, _terrainSize.Y);
-			_waterVertices[1].TextureCoordinate = new Vector2(0, 0);
+			_waterVertices[1].Position = new Vector3(0, _waterHeight, 1);
+			_waterVertices[1].TextureCoordinate = new Vector2(0, 1);
 
 			// Top right
-			_waterVertices[2].Position = new Vector3(_terrainSize.X, _waterHeight, _terrainSize.Y);
-			_waterVertices[2].TextureCoordinate = new Vector2(1, 0);
+			_waterVertices[2].Position = new Vector3(1, _waterHeight, 1);
+			_waterVertices[2].TextureCoordinate = new Vector2(1, 1);
 
 			// Bottom right
-			_waterVertices[3].Position = new Vector3(_terrainSize.X, _waterHeight, 0);
-			_waterVertices[3].TextureCoordinate = new Vector2(1, 1);
+			_waterVertices[3].Position = new Vector3(1, _waterHeight, 0);
+			_waterVertices[3].TextureCoordinate = new Vector2(1, 0);
 		}
 
 		private void SetUpIndices()
