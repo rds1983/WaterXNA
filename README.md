@@ -50,6 +50,7 @@ Video demonstration can be seen here: http://www.youtube.com/watch?v=VJmNeEJY-Ss
   * https://github.com/FNA-XNA/FNA
   * https://github.com/FontStashSharp/FontStashSharp
   * https://github.com/rds1983/XNAssets
+   
   All repos must present on the same folder level like this:
   ![image](https://github.com/rds1983/WaterXNA/assets/1057289/9371de04-31bb-426a-b73b-52e7160390fa)
 
