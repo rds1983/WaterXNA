@@ -6,7 +6,7 @@ Lake water rendering project with XNA (C#/DirectX 9).
 
 Video demonstration can be seen here: http://www.youtube.com/watch?v=VJmNeEJY-Ss
 
-![WaterXNA](https://dl.dropboxusercontent.com/u/63123790/screenshots/Projet%203D/waterXNA.jpg)
+![image](https://github.com/rds1983/WaterXNA/assets/1057289/949bd177-3fd9-4dda-844f-33842fdcabfc)
 
 # Controls
 
