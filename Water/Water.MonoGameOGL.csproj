@@ -1,12 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <DefineConstants>$(DefineConstants);MGDX11</DefineConstants>
+    <TargetFramework>net6.0</TargetFramework>
+    <DefineConstants>$(DefineConstants);MGOGL</DefineConstants>
+    <OutputPath>bin\MonoGame.DesktopGL\$(Configuration)</OutputPath>
   </PropertyGroup>
   
   <ItemGroup>
-    <EmbeddedResource Include="Shaders\MonoGameDX11\*.*" />
+    <EmbeddedResource Include="Shaders\MonoGameOGL\*.*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,10 +19,7 @@
   <ItemGroup>
     <PackageReference Include="DdsKtxSharp" Version="1.1.0.1" />
     <PackageReference Include="FontStashSharp.MonoGame" Version="1.2.8" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
     <PackageReference Include="XNAssets.MonoGame" Version="0.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\MonoGame\MonoGame.Framework\MonoGame.Framework.WindowsDX.csproj" />
   </ItemGroup>
 </Project>

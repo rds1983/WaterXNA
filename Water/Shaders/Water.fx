@@ -125,35 +125,14 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
 	input.ToCameraVector = normalize(input.ToCameraVector);
 
-	// Sample wave normal map
-	float3 normalT0 = SAMPLE_TEXTURE(TextureWaveNormalMap0, input.WaveNormalMapPosition0).rgb;
-	float3 normalT1 = SAMPLE_TEXTURE(TextureWaveNormalMap1, input.WaveNormalMapPosition1).rgb;
-
-	// Unroll the normals retrieved from the normal maps
-	normalT0.yz = normalT0.zy;
-	normalT1.yz = normalT1.zy;
-
-	normalT0 = 2.0f * normalT0 - 1.0f;
-	normalT1 = 2.0f * normalT1 - 1.0f;
-
-	float3 normalT = normalize(0.5f * (normalT0 + normalT1));
-
 	float fresnelTerm = ComputeFresnelTerm(input.ToCameraVector, CameraPosition);
 
 	// Compute the reflection from sunlight
 
 	// Get the reflection vector from the eye
-	float3 R;
 	float3 up = float3(0, 1.0f, 0);
 	float3 sunLight = 0;
 
-	if (EnableWaves)
-		R = normalize(reflect(input.ToCameraVector, normalT));
-	else
-		R = normalize(reflect(input.ToCameraVector, up));
-
-	sunLight = SunFactor * pow(saturate(dot(R, lightVector)), SunPower) * SunColor;
-	
 	if (!EnableFresnel)
 		fresnelTerm = RefractionReflectionMergeTerm;
 
@@ -176,17 +155,38 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	reflectionTexCoord.z = .1f / reflectionTexCoord.z;
 
 	// Sample refraction & reflection
-	if (EnableWaves)
-	{
-		// Sample the texture pixels from the textures using the updated texture coordinates.
-		refractionColor = SAMPLE_TEXTURE(TextureRefraction, refractionTexCoord.xy - refractionTexCoord.z * normalT.xz).rgb;
-		reflectionColor = SAMPLE_TEXTURE(TextureReflection, reflectionTexCoord.xy + reflectionTexCoord.z * normalT.xz).rgb;
-	}
-	else
-	{
-		refractionColor = SAMPLE_TEXTURE(TextureRefraction, refractionTexCoord.xy).rgb;
-		reflectionColor = SAMPLE_TEXTURE(TextureReflection, reflectionTexCoord.xy).rgb;
-	}
+	float3 R = 0;
+	float2 refractionTex = 0;
+	float2 reflectionTex = 0;
+
+#ifdef WAVES
+	// Sample wave normal map
+	float3 normalT0 = SAMPLE_TEXTURE(TextureWaveNormalMap0, input.WaveNormalMapPosition0).rgb;
+	float3 normalT1 = SAMPLE_TEXTURE(TextureWaveNormalMap1, input.WaveNormalMapPosition1).rgb;
+
+	// Unroll the normals retrieved from the normal maps
+	normalT0.yz = normalT0.zy;
+	normalT1.yz = normalT1.zy;
+
+	normalT0 = 2.0f * normalT0 - 1.0f;
+	normalT1 = 2.0f * normalT1 - 1.0f;
+
+	float3 normalT = normalize(0.5f * (normalT0 + normalT1));
+
+	// Sample the texture pixels from the textures using the updated texture coordinates.
+	R = normalize(reflect(input.ToCameraVector, normalT));
+	refractionTex = refractionTexCoord.xy - refractionTexCoord.z * normalT.xz;
+	reflectionTex = reflectionTexCoord.xy + reflectionTexCoord.z * normalT.xz;
+#else
+	R = normalize(reflect(input.ToCameraVector, up));
+	refractionTex = refractionTexCoord.xy;
+	reflectionTex = reflectionTexCoord.xy;
+#endif
+
+	refractionColor = SAMPLE_TEXTURE(TextureRefraction, refractionTex).rgb;
+	reflectionColor = SAMPLE_TEXTURE(TextureReflection, reflectionTex).rgb;
+
+	sunLight = SunFactor * pow(saturate(dot(R, lightVector)), SunPower) * SunColor;
 
 	if (!EnableSpecularLighting)
 		sunLight = 0;

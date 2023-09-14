@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using AssetManagementBase;
@@ -106,6 +107,7 @@ namespace Water
 		private Effect _refractionEffect;
 		private Effect _reflectionEffect;
 		private Effect _waterEffect;
+		private Effect _waterEffectWithoutWaves;
 		private CameraInputController _controller;
 
 		public Camera Camera { get; } = new Camera();
@@ -117,7 +119,7 @@ namespace Water
 #if FNA
 		public static AssetManager AssetManagerEffects = AssetManager.CreateResourceAssetManager(Assembly, "Shaders.FNA");
 #else
-		public static AssetManager AssetManagerEffects = AssetManager.CreateResourceAssetManager(Assembly, "Shaders.MonoGameDX11");
+		public static AssetManager AssetManagerEffects = AssetManager.CreateResourceAssetManager(Assembly, "Shaders.MonoGameOGL");
 #endif
 
 		#endregion
@@ -234,7 +236,11 @@ namespace Water
 			_basicEffect = AssetManagerEffects.LoadEffect(GraphicsDevice, "Lights.efb");
 			_refractionEffect = AssetManagerEffects.LoadEffect(GraphicsDevice, "Refraction.efb");
 			_reflectionEffect = AssetManagerEffects.LoadEffect(GraphicsDevice, "Reflection.efb");
-			_waterEffect = AssetManagerEffects.LoadEffect(GraphicsDevice, "Water.efb");
+			_waterEffect = AssetManagerEffects.LoadEffect(GraphicsDevice, "Water.efb", new Dictionary<string, string>
+			{
+				["WAVES"] = "1"
+			});
+			_waterEffectWithoutWaves = AssetManagerEffects.LoadEffect(GraphicsDevice, "Water.efb");
 			_skyboxEffect = AssetManagerEffects.LoadEffect(GraphicsDevice, "Skybox.efb");
 
 			// Skyboxes
@@ -578,41 +584,44 @@ namespace Water
 
 		private void DrawWater()
 		{
-			_waterEffect.Parameters["Projection"].SetValue(_projectionMatrix);
-			_waterEffect.Parameters["View"].SetValue(_viewMatrix);
-			_waterEffect.Parameters["World"].SetValue(Matrix.CreateScale(256, 1, 256));
+			var effect = _enableWaves ? this._waterEffect : _waterEffectWithoutWaves;
+			effect.Parameters["Projection"].SetValue(_projectionMatrix);
+			effect.Parameters["View"].SetValue(_viewMatrix);
+			effect.Parameters["World"].SetValue(Matrix.CreateScale(256, 1, 256));
 
-			_waterEffect.Parameters["TextureRefraction"].SetValue(_refractionTexture);
+			effect.Parameters["TextureRefraction"].SetValue(_refractionTexture);
 
-			_waterEffect.Parameters["TextureReflection"].SetValue(_reflectionTexture);
-			_waterEffect.Parameters["ReflectionMatrix"].SetValue(_reflectionViewMatrix);
+			effect.Parameters["TextureReflection"].SetValue(_reflectionTexture);
+			effect.Parameters["ReflectionMatrix"].SetValue(_reflectionViewMatrix);
 
-			_waterEffect.Parameters["WaterColor"].SetValue(_waterColor);
-			_waterEffect.Parameters["EnableWaves"].SetValue(_enableWaves);
+			effect.Parameters["WaterColor"].SetValue(_waterColor);
 
-			_waterEffect.Parameters["EnableRefraction"].SetValue(_enableRefraction);
-			_waterEffect.Parameters["EnableReflection"].SetValue(_enableReflection);
-			_waterEffect.Parameters["EnableFresnel"].SetValue(_enableFresnel);
-			_waterEffect.Parameters["EnableSpecularLighting"].SetValue(_enableSpecularLighting);
-			_waterEffect.Parameters["RefractionReflectionMergeTerm"].SetValue(_refractionReflectionMergeTerm);
+			effect.Parameters["EnableRefraction"].SetValue(_enableRefraction);
+			effect.Parameters["EnableReflection"].SetValue(_enableReflection);
+			effect.Parameters["EnableFresnel"].SetValue(_enableFresnel);
+			effect.Parameters["EnableSpecularLighting"].SetValue(_enableSpecularLighting);
+			effect.Parameters["RefractionReflectionMergeTerm"].SetValue(_refractionReflectionMergeTerm);
 
-			_waterEffect.Parameters["WaveTextureScale"].SetValue(_waveTextureScale);
+			effect.Parameters["WaveTextureScale"].SetValue(_waveTextureScale);
 
-			_waterEffect.Parameters["TextureWaveNormalMap0"].SetValue(_waveNormalMap0);
-			_waterEffect.Parameters["TextureWaveNormalMap1"].SetValue(_waveNormalMap1);
+			if (_enableWaves)
+			{
+				effect.Parameters["TextureWaveNormalMap0"].SetValue(_waveNormalMap0);
+				effect.Parameters["TextureWaveNormalMap1"].SetValue(_waveNormalMap1);
+			}
 
-			_waterEffect.Parameters["WaveMapOffset0"].SetValue(_waveNormalMapOffset0);
-			_waterEffect.Parameters["WaveMapOffset1"].SetValue(_waveNormalMapOffset1);
+			effect.Parameters["WaveMapOffset0"].SetValue(_waveNormalMapOffset0);
+			effect.Parameters["WaveMapOffset1"].SetValue(_waveNormalMapOffset1);
 
-			_waterEffect.Parameters["CameraPosition"].SetValue(Camera.Position);
+			effect.Parameters["CameraPosition"].SetValue(Camera.Position);
 
 			// Sun
-			_waterEffect.Parameters["SunColor"].SetValue(_sunColor);
-			_waterEffect.Parameters["SunDirection"].SetValue(_sunDirection);
-			_waterEffect.Parameters["SunFactor"].SetValue(_sunFactor);
-			_waterEffect.Parameters["SunPower"].SetValue(_sunPower);
+			effect.Parameters["SunColor"].SetValue(_sunColor);
+			effect.Parameters["SunDirection"].SetValue(_sunDirection);
+			effect.Parameters["SunFactor"].SetValue(_sunFactor);
+			effect.Parameters["SunPower"].SetValue(_sunPower);
 
-			foreach (EffectPass pass in _waterEffect.CurrentTechnique.Passes)
+			foreach (EffectPass pass in effect.CurrentTechnique.Passes)
 			{
 				pass.Apply();
 
