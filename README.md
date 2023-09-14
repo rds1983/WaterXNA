@@ -44,9 +44,6 @@ Video demonstration can be seen here: http://www.youtube.com/watch?v=VJmNeEJY-Ss
 * 4/6 => Change X direction of sun light
 * 9/3 => Change Y direction of sun light
 
-## Mouse:
-Control the camera direction.
-
 ## Building from Source Code
 1. Clone following projects:
   * This one.
