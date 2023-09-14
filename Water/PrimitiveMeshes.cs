@@ -15,22 +15,22 @@ namespace Water.FNA.Core
 			6, 3, 2, 4, 5, 0, 0, 5, 1
 		};
 
-		private static Vector3[] _cubeFromZeroToOne = new Vector3[]
+		private static Vector3[] _cubeFromMinusOneToOne = new Vector3[]
 		{
-			new Vector3(0, 1, 1),
+			new Vector3(-1, 1, 1),
 			new Vector3(1, 1, 1),
-			new Vector3(1, 0, 1),
-			new Vector3(0, 0, 1),
-			new Vector3(0, 1, 0),
-			new Vector3(1, 1, 0),
-			new Vector3(1, 0, 0),
-			new Vector3(0, 0, 0)
+			new Vector3(1, -1, 1),
+			new Vector3(-1, -1, 1),
+			new Vector3(-1, 1, -1),
+			new Vector3(1, 1, -1),
+			new Vector3(1, -1, -1),
+			new Vector3(-1, -1,-1)
 		};
 
-		public static MeshData CreateCubePositionFromZeroToOne(GraphicsDevice device)
+		public static MeshData CreateCubePositionFromMinusOneToOne(GraphicsDevice device)
 		{
 
-			var result = CreatePrimitivePosition(device, _cubeFromZeroToOne, _cubeIndices);
+			var result = CreatePrimitivePosition(device, _cubeFromMinusOneToOne, _cubeIndices);
 
 			return result;
 		}

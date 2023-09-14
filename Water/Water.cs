@@ -236,7 +236,7 @@ namespace Water
 			_skyboxEffect = AssetManagerEffects.LoadEffect(GraphicsDevice, "Skybox.efb");
 
 			// Skyboxes
-			_skyboxCube = PrimitiveMeshes.CreateCubePositionFromZeroToOne(GraphicsDevice);
+			_skyboxCube = PrimitiveMeshes.CreateCubePositionFromMinusOneToOne(GraphicsDevice);
 			_skyboxTexture = AssetManager.LoadDdsCube(GraphicsDevice, "Skyboxes/Islands.dds");
 		}
 

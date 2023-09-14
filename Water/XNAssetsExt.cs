@@ -60,17 +60,11 @@ namespace Water.FNA.Core
 						graphicsDevice);
 		};
 
-		private static AssetLoader<Texture2D> _ddsLoader = (manager, assetName, settings, tag) =>
+		private static SurfaceFormat ToSurfaceFormat(ddsktx_format src)
 		{
-			DdsKtxParser parser = DdsKtxParser.FromMemory(manager.ReadAssetAsByteArray(assetName));
-
-			ddsktx_texture_info info = parser.Info;
-
-			ddsktx_sub_data sub_data;
-			var imageData = parser.GetSubData(0, 0, 0, out sub_data);
-
 			SurfaceFormat format = SurfaceFormat.Color;
-			switch (info.format)
+
+			switch (src)
 			{
 				case ddsktx_format.DDSKTX_FORMAT_BC1:
 					format = SurfaceFormat.Dxt1;
@@ -83,7 +77,20 @@ namespace Water.FNA.Core
 				case ddsktx_format.DDSKTX_FORMAT_BC3:
 					format = SurfaceFormat.Dxt5;
 					break;
+			}
 
+			return format;
+		}
+
+		private static byte[] LoadFace(DdsKtxParser parser, int faceIndex)
+		{
+			ddsktx_texture_info info = parser.Info;
+
+			ddsktx_sub_data sub_data;
+			var imageData = parser.GetSubData(0, faceIndex, 0, out sub_data);
+
+			switch (info.format)
+			{
 				case ddsktx_format.DDSKTX_FORMAT_BGRA8:
 					// Switch B and R
 					for (var i = 0; i < imageData.Length / 4; ++i)
@@ -113,6 +120,17 @@ namespace Water.FNA.Core
 				default:
 					throw new Exception("Format " + info.format.ToString() + "isn't supported.");
 			}
+
+			return imageData;
+		}
+
+		private static AssetLoader<Texture2D> _ddsLoader = (manager, assetName, settings, tag) =>
+		{
+			DdsKtxParser parser = DdsKtxParser.FromMemory(manager.ReadAssetAsByteArray(assetName));
+			ddsktx_texture_info info = parser.Info;
+
+			var format = ToSurfaceFormat(info.format);
+			var imageData = LoadFace(parser, 0);
 
 			var graphicsDevice = (GraphicsDevice)tag;
 			Texture2D texture = new Texture2D(graphicsDevice, info.width, info.height, false, format);
@@ -124,62 +142,20 @@ namespace Water.FNA.Core
 		private static AssetLoader<TextureCube> _ddsCubeLoader = (manager, assetName, settings, tag) =>
 		{
 			DdsKtxParser parser = DdsKtxParser.FromMemory(manager.ReadAssetAsByteArray(assetName));
-
 			ddsktx_texture_info info = parser.Info;
 
-			ddsktx_sub_data sub_data;
-			var imageData = parser.GetSubData(0, 0, 0, out sub_data);
-
-			SurfaceFormat format = SurfaceFormat.Color;
-			switch (info.format)
-			{
-				case ddsktx_format.DDSKTX_FORMAT_BC1:
-					format = SurfaceFormat.Dxt1;
-					break;
-
-				case ddsktx_format.DDSKTX_FORMAT_BC2:
-					format = SurfaceFormat.Dxt3;
-					break;
-
-				case ddsktx_format.DDSKTX_FORMAT_BC3:
-					format = SurfaceFormat.Dxt5;
-					break;
-
-				case ddsktx_format.DDSKTX_FORMAT_BGRA8:
-					// Switch B and R
-					for (var i = 0; i < imageData.Length / 4; ++i)
-					{
-						var temp = imageData[i * 4];
-						imageData[i * 4] = imageData[i * 4 + 2];
-						imageData[i * 4 + 2] = temp;
-						imageData[i * 4 + 3] = 255;
-					}
-
-					break;
-
-				case ddsktx_format.DDSKTX_FORMAT_RGB8:
-					// Add alpha channel
-					var newImageData = new byte[info.width * info.height * 4];
-					for (var i = 0; i < newImageData.Length / 4; ++i)
-					{
-						newImageData[i * 4] = imageData[i * 3 + 2];
-						newImageData[i * 4 + 1] = imageData[i * 3 + 1];
-						newImageData[i * 4 + 2] = imageData[i * 3];
-						newImageData[i * 4 + 3] = 255;
-					}
-
-					imageData = newImageData;
-					break;
-
-				default:
-					throw new Exception("Format " + info.format.ToString() + "isn't supported.");
-			}
-
 			var graphicsDevice = (GraphicsDevice)tag;
-			Texture2D texture = new Texture2D(graphicsDevice, info.width, info.height, false, format);
-			texture.SetData(imageData);
+			var format = ToSurfaceFormat(info.format);
 
-			return null;
+			var texture = new TextureCube(graphicsDevice, info.width, false, format);
+			texture.SetData(CubeMapFace.PositiveX, LoadFace(parser, 0));
+			texture.SetData(CubeMapFace.NegativeX, LoadFace(parser, 1));
+			texture.SetData(CubeMapFace.PositiveY, LoadFace(parser, 2));
+			texture.SetData(CubeMapFace.NegativeY, LoadFace(parser, 3));
+			texture.SetData(CubeMapFace.PositiveZ, LoadFace(parser, 4));
+			texture.SetData(CubeMapFace.NegativeZ, LoadFace(parser, 5));
+
+			return texture;
 		};
 
 		public static FontSystem LoadFontSystem(this AssetManager assetManager, string assetName, string[] additionalFonts = null, Texture2D existingTexture = null, Rectangle existingTextureUsedSpace = default(Rectangle))
