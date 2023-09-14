@@ -2,7 +2,7 @@ WaterXNA
 ========
 Fork of https://github.com/Noxalus/WaterXNA
 
-Lake water rendering project with XNA (C#/DirectX 9).
+Lake water rendering project with FNA.
 
 Video demonstration can be seen here: http://www.youtube.com/watch?v=VJmNeEJY-Ss
 
