@@ -1,7 +1,10 @@
+#include "Macros.fxh"
+
+DECLARE_TEXTURE_LINEAR_WRAP(Texture);
+
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
-Texture2D Texture;
 
 // General lighting
 bool EnableLighting;
@@ -12,16 +15,6 @@ float AmbientIntensity;
 float3 DiffuseLightDirection;
 float4 DiffuseColor;
 float DiffuseIntensity;
-
-sampler2D SampleType = sampler_state
-{
-	Texture = <Texture>;
-	MinFilter = LINEAR;
-	MagFilter = LINEAR;
-	MipFilter = LINEAR;
-	AddressU = WRAP;
-	AddressV = WRAP;
-};
 
 struct VertexShaderInput
 {
@@ -57,7 +50,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
 	// Get the texture color.
-	float4 textureColor = tex2D(SampleType, input.UV);
+	float4 textureColor = SAMPLE_TEXTURE(Texture, input.UV);
 
 	if (EnableLighting)
 	{
@@ -74,7 +67,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 		float3 diffuse = s * (DiffuseColor.rgb * DiffuseIntensity);
 
 		// Combine the color from lighting with the texture color.
-		float3 color = (diffuse + (AmbientColor * AmbientIntensity)) * textureColor.rgb;
+		float3 color = (diffuse + (AmbientColor.rgb * AmbientIntensity)) * textureColor.rgb;
 
 		// Sum all the terms together and copy over the diffuse alpha.
 		return float4(color, textureColor.a);
@@ -83,40 +76,6 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	{
 		return textureColor;
 	}
-
-	/*
-	float4 textureColor = tex2D(SampleType, input.UV);
-	float4 color;
-
-	if (EnableLighting)
-	{
-		float lightIntensity = dot(input.Normal, DiffuseLightDirection);
-		color = saturate(DiffuseColor * DiffuseIntensity * lightIntensity);
-
-		float3 light = normalize(DiffuseLightDirection);
-		float3 normal = normalize(input.Normal);
-		float3 r = normalize(2 * dot(light, normal) * normal - light);
-		float3 v = normalize(mul(normalize(ViewVector), World));
-
-		float dotProduct = dot(r, v);
-		float4 specular = SpecularIntensity * SpecularColor * max(pow(dotProduct, Shininess), 0) * length(color);
-
-		color = saturate(color * textureColor);
-		color = saturate(color * (AmbientColor * AmbientIntensity) + specular);
-	}
-	else
-		color = textureColor;
-
-	return color;
-	*/
-
 }
 
-technique ClassicTechnique
-{
-    pass Pass1
-    {
-        VertexShader = compile vs_2_0 VertexShaderFunction();
-        PixelShader = compile ps_2_0 PixelShaderFunction();
-    }
-}
+TECHNIQUE(Default, VertexShaderFunction, PixelShaderFunction);

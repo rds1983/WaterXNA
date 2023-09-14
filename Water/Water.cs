@@ -46,7 +46,7 @@ namespace Water
 		private Vector4 _reflectionClippingPlane;
 
 		// Water
-		private Vector4 _waterColor;
+		private Vector3 _waterColor;
 		private float _waterHeight;
 		private VertexPositionTexture[] _waterVertices;
 		private int[] _waterIndices;
@@ -90,7 +90,7 @@ namespace Water
 		private float _diffuseIntensity;
 
 		// Sun
-		private Vector4 _sunColor;
+		private Vector3 _sunColor;
 		private Vector3 _sunDirection;
 		private float _sunFactor;
 		private float _sunPower;
@@ -147,7 +147,7 @@ namespace Water
 			_projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(_fieldOfView), _aspectRatio, _nearPlane, _farPlane);
 
 			// Water
-			_waterColor = new Vector4(0.5f, 0.79f, 0.75f, 1.0f);
+			_waterColor = new Vector3(0.5f, 0.79f, 0.75f);
 
 			_refractionReflectionMergeTerm = 0.5f;
 
@@ -163,7 +163,7 @@ namespace Water
 			_diffuseIntensity = 1.0f;
 
 			// Sun
-			_sunColor = new Vector4(1.0f, 0.8f, 0.4f, 1.0f);
+			_sunColor = new Vector3(1.0f, 0.8f, 0.4f);
 			_sunDirection = new Vector3(-.85f, -.45f, -.25f);
 			_sunFactor = 1.5f;
 			_sunPower = 250.0f;
@@ -538,7 +538,6 @@ namespace Water
 
 		private void DrawTerrain(Effect effect, Matrix viewMatrix)
 		{
-			effect.CurrentTechnique = effect.Techniques["ClassicTechnique"];
 			effect.Parameters["Projection"].SetValue(_projectionMatrix);
 			effect.Parameters["View"].SetValue(viewMatrix);
 			effect.Parameters["World"].SetValue(Matrix.Identity);
@@ -575,14 +574,13 @@ namespace Water
 
 		private void DrawWater()
 		{
-			_waterEffect.CurrentTechnique = _waterEffect.Techniques["ClassicTechnique"];
 			_waterEffect.Parameters["Projection"].SetValue(_projectionMatrix);
 			_waterEffect.Parameters["View"].SetValue(_viewMatrix);
 			_waterEffect.Parameters["World"].SetValue(Matrix.CreateScale(256, 1, 256));
 
-			_waterEffect.Parameters["RefractionTexture"].SetValue(_refractionTexture);
+			_waterEffect.Parameters["TextureRefraction"].SetValue(_refractionTexture);
 
-			_waterEffect.Parameters["ReflectionTexture"].SetValue(_reflectionTexture);
+			_waterEffect.Parameters["TextureReflection"].SetValue(_reflectionTexture);
 			_waterEffect.Parameters["ReflectionMatrix"].SetValue(_reflectionViewMatrix);
 
 			_waterEffect.Parameters["WaterColor"].SetValue(_waterColor);
@@ -596,8 +594,8 @@ namespace Water
 
 			_waterEffect.Parameters["WaveTextureScale"].SetValue(_waveTextureScale);
 
-			_waterEffect.Parameters["WaveNormalMap0"].SetValue(_waveNormalMap0);
-			_waterEffect.Parameters["WaveNormalMap1"].SetValue(_waveNormalMap1);
+			_waterEffect.Parameters["TextureWaveNormalMap0"].SetValue(_waveNormalMap0);
+			_waterEffect.Parameters["TextureWaveNormalMap1"].SetValue(_waveNormalMap1);
 
 			_waterEffect.Parameters["WaveMapOffset0"].SetValue(_waveNormalMapOffset0);
 			_waterEffect.Parameters["WaveMapOffset1"].SetValue(_waveNormalMapOffset1);

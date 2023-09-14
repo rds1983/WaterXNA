@@ -1,3 +1,13 @@
+#include "Macros.fxh"
+
+// Constant for Fresnel computation
+static const float R0 = 0.02037f;
+
+DECLARE_TEXTURE_LINEAR_WRAP(TextureWaveNormalMap0);
+DECLARE_TEXTURE_LINEAR_WRAP(TextureWaveNormalMap1);
+DECLARE_TEXTURE_LINEAR_CLAMP(TextureRefraction);
+DECLARE_TEXTURE_LINEAR_CLAMP(TextureReflection);
+
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
@@ -26,58 +36,15 @@ bool EnableReflection;
 bool EnableFresnel;
 bool EnableSpecularLighting;
 
-float4 WaterColor;
+float3 WaterColor;
 
 // Sun
-float4 SunColor;
+float3 SunColor;
 float3 SunDirection;
 float SunFactor;
 float SunPower;
 
 float RefractionReflectionMergeTerm;
-
-// Constant for Fresnel computation
-static const float R0 = 0.02037f;
-
-sampler2D SampleTypeRefraction = sampler_state
-{
-	Texture = <RefractionTexture>;
-	MinFilter = LINEAR;
-	MagFilter = LINEAR;
-	MipFilter = LINEAR;
-	AddressU = CLAMP;
-	AddressV = CLAMP;
-};
-
-sampler2D SampleTypeReflection = sampler_state
-{
-	Texture = <ReflectionTexture>;
-	MinFilter = LINEAR;
-	MagFilter = LINEAR;
-	MipFilter = LINEAR;
-	AddressU = CLAMP;
-	AddressV = CLAMP;
-};
-
-sampler2D SampleTypeWaveNormalMap0 = sampler_state
-{
-	Texture = <WaveNormalMap0>;
-	MinFilter = LINEAR;
-	MagFilter = LINEAR;
-	MipFilter = LINEAR;
-	AddressU = WRAP;
-	AddressV = WRAP;
-};
-
-sampler2D SampleTypeWaveNormalMap1 = sampler_state
-{
-	Texture = <WaveNormalMap1>;
-	MinFilter = LINEAR;
-	MagFilter = LINEAR;
-	MipFilter = LINEAR;
-	AddressU = WRAP;
-	AddressV = WRAP;
-};
 
 // Function calculating fresnel term.
 float ComputeFresnelTerm(float3 eyeVec, float3 cameraPosition)
@@ -126,7 +93,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	output.Position = mul(input.Position, worldViewProj);
 
 	float4 worldPos = mul(input.Position, World);
-	output.ToCameraVector = worldPos - CameraPosition;
+	output.ToCameraVector = worldPos.xyz - CameraPosition;
 
 	// Calculate reflection position
 
@@ -152,15 +119,15 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	float3 lightVector = normalize(-SunDirection);
 	float4 refractionTexCoord;
 	float4 reflectionTexCoord;
-	float4 refractionColor;
-	float4 reflectionColor;
+	float3 refractionColor;
+	float3 reflectionColor;
 	float4 color;
 
 	input.ToCameraVector = normalize(input.ToCameraVector);
 
 	// Sample wave normal map
-	float3 normalT0 = tex2D(SampleTypeWaveNormalMap0, input.WaveNormalMapPosition0);
-	float3 normalT1 = tex2D(SampleTypeWaveNormalMap1, input.WaveNormalMapPosition1);
+	float3 normalT0 = SAMPLE_TEXTURE(TextureWaveNormalMap0, input.WaveNormalMapPosition0).rgb;
+	float3 normalT1 = SAMPLE_TEXTURE(TextureWaveNormalMap1, input.WaveNormalMapPosition1).rgb;
 
 	// Unroll the normals retrieved from the normal maps
 	normalT0.yz = normalT0.zy;
@@ -212,13 +179,13 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	if (EnableWaves)
 	{
 		// Sample the texture pixels from the textures using the updated texture coordinates.
-		refractionColor = tex2D(SampleTypeRefraction, refractionTexCoord.xy - refractionTexCoord.z * normalT.xz);
-		reflectionColor = tex2D(SampleTypeReflection, reflectionTexCoord.xy + reflectionTexCoord.z * normalT.xz);
+		refractionColor = SAMPLE_TEXTURE(TextureRefraction, refractionTexCoord.xy - refractionTexCoord.z * normalT.xz).rgb;
+		reflectionColor = SAMPLE_TEXTURE(TextureReflection, reflectionTexCoord.xy + reflectionTexCoord.z * normalT.xz).rgb;
 	}
 	else
 	{
-		refractionColor = tex2D(SampleTypeRefraction, refractionTexCoord.xy);
-		reflectionColor = tex2D(SampleTypeReflection, reflectionTexCoord.xy);
+		refractionColor = SAMPLE_TEXTURE(TextureRefraction, refractionTexCoord.xy).rgb;
+		reflectionColor = SAMPLE_TEXTURE(TextureReflection, reflectionTexCoord.xy).rgb;
 	}
 
 	if (!EnableSpecularLighting)
@@ -244,11 +211,4 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	return color;
 }
 
-technique ClassicTechnique
-{
-	pass Pass1
-	{
-		VertexShader = compile vs_3_0 VertexShaderFunction();
-		PixelShader = compile ps_3_0 PixelShaderFunction();
-	}
-}
+TECHNIQUE(Default, VertexShaderFunction, PixelShaderFunction);

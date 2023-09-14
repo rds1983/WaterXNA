@@ -1,8 +1,11 @@
+#include "Macros.fxh"
+
+DECLARE_TEXTURE_LINEAR_MIRROR(Texture);
+
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
 float4x4 WorldInverseTranspose;
-Texture2D Texture;
 float4 ClippingPlane;
 
 // General lighting
@@ -14,16 +17,6 @@ float AmbientIntensity;
 float3 DiffuseLightDirection;
 float4 DiffuseColor;
 float DiffuseIntensity;
-
-sampler2D SampleType = sampler_state
-{
-	Texture = <Texture>;
-	MinFilter = LINEAR;
-	MagFilter = LINEAR;
-	MipFilter = LINEAR;
-	AddressU = Mirror;
-	AddressV = Mirror;
-};
 
 struct VertexShaderInput
 {
@@ -57,7 +50,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	output.UV = input.UV;
 
 	// Clipping
-	output.Clipping = dot(input.Position, ClippingPlane.xyz) + ClippingPlane.w;
+	output.Clipping = dot(input.Position.xyz, ClippingPlane.xyz) + ClippingPlane.w;
 
 	return output;
 }
@@ -67,7 +60,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	clip(input.Clipping.x);
 
 	// Get the texture color.
-	float4 textureColor = tex2D(SampleType, input.UV);
+	float4 textureColor = SAMPLE_TEXTURE(Texture, input.UV);
 
 	if (EnableLighting)
 	{
@@ -84,7 +77,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 		float3 diffuse = s * (DiffuseColor.rgb * DiffuseIntensity);
 
 		// Combine the color from lighting with the texture color.
-		float3 color = (diffuse + (AmbientColor * AmbientIntensity)) * textureColor.rgb;
+		float3 color = (diffuse + (AmbientColor.rgb * AmbientIntensity)) * textureColor.rgb;
 
 		// Sum all the terms together and copy over the diffuse alpha.
 		return float4(color, textureColor.a);
@@ -95,11 +88,4 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	}
 }
 
-technique ClassicTechnique
-{
-    pass Pass1
-    {
-        VertexShader = compile vs_2_0 VertexShaderFunction();
-        PixelShader = compile ps_2_0 PixelShaderFunction();
-    }
-}
+TECHNIQUE(Default, VertexShaderFunction, PixelShaderFunction);
