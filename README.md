@@ -1,5 +1,6 @@
 WaterXNA
 ========
+Fork of https://github.com/Noxalus/WaterXNA
 
 Lake water rendering project with XNA (C#/DirectX 9).
 
@@ -12,12 +13,11 @@ Video demonstration can be seen here: http://www.youtube.com/watch?v=VJmNeEJY-Ss
 ## Keyboard:
 
 ### Move camera
-* Z => Go straight forward
+* W => Go forward
 * S => Go backward
-* Q => Strafe left
+* A => Strafe left
 * D => Strafe right
-* Space => Go up
-* CTRL => Go down
+* Hold Right Mouse Button and Move Mouse => Rotate
 
 ### Show/Hide scene parts
 * F1 => Show/Hide some debug informations
@@ -46,3 +46,15 @@ Video demonstration can be seen here: http://www.youtube.com/watch?v=VJmNeEJY-Ss
 
 ## Mouse:
 Control the camera direction.
+
+## Building from Source Code
+1. Clone following projects:
+  * This one.
+  * https://github.com/FNA-XNA/FNA
+  * https://github.com/FontStashSharp/FontStashSharp
+  * https://github.com/rds1983/XNAssets
+  All repos must present on the same folder level like this:
+  ![image](https://github.com/rds1983/WaterXNA/assets/1057289/9371de04-31bb-426a-b73b-52e7160390fa)
+
+2. Open Water.FNA.Core.sln in the IDE.
+
