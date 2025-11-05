@@ -217,8 +217,8 @@ namespace Water
 
 			// Load textures
 			_terrainTexture = AssetManager.LoadTexture2D(GraphicsDevice, @"Textures/terrain_texture.jpg");
-			_waveNormalMap0 = AssetManager.LoadDds(GraphicsDevice, @"Textures/wave0.dds");
-			_waveNormalMap1 = AssetManager.LoadDds(GraphicsDevice, @"Textures/wave1.dds");
+			_waveNormalMap0 = AssetManager.LoadTexture2D(GraphicsDevice, @"Textures/wave0.dds");
+			_waveNormalMap1 = AssetManager.LoadTexture2D(GraphicsDevice, @"Textures/wave1.dds");
 
 			// Load height map
 			LoadHeightData(Path.Combine(RootAssetFolder, "terrain_height.raw"));
@@ -245,7 +245,7 @@ namespace Water
 
 			// Skyboxes
 			_skyboxCube = PrimitiveMeshes.CreateCubePositionFromMinusOneToOne(GraphicsDevice);
-			_skyboxTexture = AssetManager.LoadDdsCube(GraphicsDevice, "Skyboxes/Islands.dds");
+			_skyboxTexture = AssetManager.LoadTextureCube(GraphicsDevice, "Skyboxes/Islands.dds");
 		}
 
 		protected override void Update(GameTime gameTime)
